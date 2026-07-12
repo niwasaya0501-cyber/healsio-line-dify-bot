@@ -39,9 +39,15 @@ function handleEvent_(event, props) {
   if (event.type !== 'message' || event.message.type !== 'text') {
     return;
   }
+  var replyToken = event.replyToken;
+  // LINE Developersコンソールの「検証」ボタンはreplyTokenが全て0のダミーイベントを送る。
+  // Difyへの問い合わせを待つとタイムアウトするため、実処理をせず即座に抜ける。
+  if (/^0+$/.test(replyToken)) {
+    return;
+  }
+
   var userId = event.source.userId;
   var userText = event.message.text;
-  var replyToken = event.replyToken;
 
   var answer = askDify_(userText, userId, props);
   replyToLine_(replyToken, answer, props);
