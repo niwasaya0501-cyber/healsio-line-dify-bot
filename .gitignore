@@ -1,0 +1,7 @@
+# clasp のログイン認証情報（絶対にコミットしない）
+.clasprc.json
+*.clasprc.json
+
+node_modules/
+.DS_Store
+*.log
