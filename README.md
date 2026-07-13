@@ -102,8 +102,18 @@ clasp deploy --deploymentId <既存のデプロイID>
 | `DIFY_API_KEY` | Difyの対象アプリ「APIアクセス」ページで発行したAPIキー（`app-` から始まる文字列） |
 | `DIFY_API_BASE` | DifyのAPIベースURL。クラウド版は通常 `https://api.dify.ai/v1` |
 | `WEBHOOK_VERIFY_TOKEN` | （任意・推奨）自分で決めた合言葉。ランダムな英数字文字列を推奨 |
+| `MANUAL_PDF_URL` | （任意）取扱説明書PDFの公開URL。設定すると回答に「📖 説明書◯ページに記載があります」＋該当ページを開くリンク（`#page=◯`付き）を添えて返信する |
+| `PAGES_INDEX_URL` | （任意・`MANUAL_PDF_URL`とセットで設定）`data/pages.json` を公開したURL。例: `https://raw.githubusercontent.com/niwasaya0501-cyber/healsio-line-dify-bot/main/data/pages.json` |
 
 5. 保存する
+
+### ページ番号付きリンク機能について
+
+`MANUAL_PDF_URL` と `PAGES_INDEX_URL` の両方を設定すると、Difyの回答に添えられた引用元チャンク（`retriever_resources`）の内容を、あらかじめ抽出しておいたページ本文一覧（`data/pages.json`）と突き合わせて、参照元のページ番号を推定する。
+
+- `data/pages.json` は、`brew install poppler` の `pdftotext` で取扱説明書PDFを1ページずつテキスト化して作成したもの（`[{ "page": 1, "text": "..." }, ...]`）。PDFの内容が改訂された場合は作り直して再コミットする必要がある。
+- ページ番号の特定は「ページ本文とのn-gram（8文字単位）一致率」による推定のため、一致率が低い場合はページ案内を付けずに回答本文のみを返す（誤ったページ番号を案内しないための安全策）。
+- Difyの回答に「記載がない」「お答えできません」等の文言が含まれる場合も、ページ案内は付けない。
 
 ## LINE Developers側の設定
 
